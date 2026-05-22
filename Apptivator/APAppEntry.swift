@@ -5,8 +5,8 @@
 
 import AXSwift
 import SwiftyJSON
-import MASShortcut
-import CleanroomLogger
+import KeyboardShortcuts
+import os
 
 // Amount of time (in seconds) to wait after launching an applicaton until attempting
 // to attach listeners to it.
@@ -74,13 +74,13 @@ class APAppEntry: CustomDebugStringConvertible {
 
     var isActive: Bool { return self.observer != nil }
     var isEnabled: Bool { return APState.shared.isEnabled && UIElement.isProcessTrusted(withPrompt: true) }
-    var sequence: [MASShortcutView] = [] {
+    var sequence: [KeyboardShortcuts.Shortcut] = [] {
         didSet {
             // Unregister old shortcuts if any of them are registered. `state.registerShortcuts()` will
             // unregister all other shortcuts anyway, so this can be called outside of the state.
-            oldValue.forEach({ shortcutView in
-                if APState.shared.monitor.isShortcutRegistered(shortcutView.shortcutValue) {
-                    APState.shared.monitor.unregisterShortcut(shortcutView.shortcutValue)
+            oldValue.forEach({ shortcut in
+                if APState.shared.monitor.isShortcutRegistered(shortcut) {
+                    APState.shared.monitor.unregisterShortcut(shortcut)
                 }
             })
         }
@@ -108,12 +108,10 @@ class APAppEntry: CustomDebugStringConvertible {
 
         self.init(url: url, config: json["config"].dictionaryObject as? [String:Bool] ?? nil)
 
-        var sequence: [MASShortcutView] = []
+        var sequence: [KeyboardShortcuts.Shortcut] = []
         for (_, value):(String, JSON) in json["sequence"] {
             if let keyCode = value["keyCode"].uInt, let modifierFlags = value["modifierFlags"].uInt {
-                let shortcutView = MASShortcutView()
-                shortcutView.shortcutValue = MASShortcut(keyCode: keyCode, modifierFlags: modifierFlags)
-                sequence.append(shortcutView)
+                sequence.append(KeyboardShortcuts.Shortcut(cocoaKeyCode: keyCode, cocoaModifierFlags: modifierFlags))
             }
         }
         self.sequence = sequence
@@ -163,11 +161,11 @@ class APAppEntry: CustomDebugStringConvertible {
                         // Move the window to the new destination.
                         if !frame.equalTo(prevFrame) { setRect(ofElement: window, rect: frame) }
                     } else {
-                        Log.error?.message("Failed to find screen of rect: \(prevFrame)")
+                        Logger.app.error("Failed to find screen of rect: \(String(describing: prevFrame), privacy: .public)")
                     }
                 }
             } catch {
-                Log.error?.message("Failed to move windows of \(app) (\(runningApp))")
+                Logger.app.error("Failed to move windows of \(String(describing: app), privacy: .public) (\(String(describing: runningApp), privacy: .public))")
             }
         }
     }
@@ -207,14 +205,12 @@ class APAppEntry: CustomDebugStringConvertible {
         do {
             try observer?.addNotification(.applicationDeactivated, forElement: app)
         } catch {
-            Log.error?.message("Failed to add observers to [\(app)]: \(error)")
+            Logger.app.error("Failed to add observers to [\(String(describing: app), privacy: .public)]: \(error.localizedDescription, privacy: .public)")
         }
     }
 
     var shortcutString: String? {
-        let str = sequence
-            .compactMap({ $0.shortcutValue != nil ? "\($0.shortcutValue.description)" : nil })
-            .joined(separator: ", ")
+        let str = sequence.map({ $0.description }).joined(separator: ", ")
         return str.count > 0 ? str : nil
     }
 
@@ -222,12 +218,10 @@ class APAppEntry: CustomDebugStringConvertible {
         return [
             "url": url.absoluteString,
             "config": config.asJSON,
-            "sequence": sequence.map({ shortcutView in
+            "sequence": sequence.map({ shortcut in
                 var json: JSON = [:]
-                if let shortcut = shortcutView.shortcutValue {
-                    json["keyCode"].uInt = shortcut.keyCode
-                    json["modifierFlags"].uInt = shortcut.modifierFlags
-                }
+                json["keyCode"].uInt = shortcut.cocoaKeyCode
+                json["modifierFlags"].uInt = shortcut.cocoaModifierFlags
                 return json
             }) as [JSON]
         ] as JSON
@@ -247,7 +241,7 @@ class APAppEntry: CustomDebugStringConvertible {
             do {
                 if let entry = try APAppEntry.init(json: entryJson) { entries.append(entry) }
             } catch {
-                Log.error?.message("Unexpected error deserialising ApplicationEntry: \(entryJson), \(error)")
+                Logger.app.error("Unexpected error deserialising ApplicationEntry: \(String(describing: entryJson), privacy: .public), \(error.localizedDescription, privacy: .public)")
             }
         }
 

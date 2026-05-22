@@ -3,6 +3,8 @@
 //  Apptivator
 //
 
+import KeyboardShortcuts
+
 let SEQUENCE_DETAIL_NO_SHORTCUT = "There must be at least one shortcut in a sequence."
 let SEQUENCE_DETAIL_TEXT = """
 To use a seqeunce, press the first shortcut (and release it), then press the next, and so on, until \
@@ -25,18 +27,20 @@ class APSequenceViewController: NSViewController {
     var referenceView: NSView!
     var defaultTextColor: NSColor!
 
-    var list: [(MASShortcutView, NSKeyValueObservation)] = []
-    var listAsSequence: [MASShortcutView] {
-        // Filter out any nil values.
-        get { return list.compactMap({ $0.0.shortcutValue != nil ? $0.0 : nil }) }
+    // Each row is a (recorder, currentShortcutValueOrNil). The trailing row always has a nil value
+    // (an empty recorder ready for the user to record into).
+    private struct Row {
+        let recorder: KeyboardShortcuts.RecorderCocoa
+        var shortcut: KeyboardShortcuts.Shortcut?
+    }
+    private var list: [Row] = []
+    private var listAsSequence: [KeyboardShortcuts.Shortcut] {
+        list.compactMap { $0.shortcut }
     }
     var entry: APAppEntry! {
-        // Copy the entry's sequence.
         didSet {
-            list = entry.sequence.map({
-                newShortcut(withKeyCode: $0.shortcutValue.keyCode, modifierFlags: $0.shortcutValue.modifierFlags)
-            })
-            list.append(newShortcut(withKeyCode: nil, modifierFlags: nil))
+            list = entry.sequence.map { newRow(with: $0) }
+            list.append(newRow(with: nil))
         }
     }
 
@@ -45,7 +49,7 @@ class APSequenceViewController: NSViewController {
     @IBOutlet weak var tableView: NSTableView!
     @IBOutlet weak var imageView: NSImageView!
     @IBOutlet weak var saveButton: NSButton!
-    
+
     @IBAction func closeButtonClick(_ sender: Any) { slideOutAndRemove() }
     @IBAction func saveButtonClick(_ sender: Any) {
         let sequence = listAsSequence
@@ -73,54 +77,49 @@ class APSequenceViewController: NSViewController {
         detailTextField.stringValue = SEQUENCE_DETAIL_TEXT
         defaultTextColor = detailTextField.textColor
 
-        updateList(self)
+        updateList()
     }
 
-    // This should be the only way to create shortcuts to add to the editable list. Each shortcut is
-    // paired with its recordingWatcher, so that we don't accidentally fire any other shortcuts when
-    // the user is configuring these shortcuts.
-    func newShortcut(withKeyCode keyCode: UInt?, modifierFlags: UInt?) -> (MASShortcutView, NSKeyValueObservation) {
-        let view = MASShortcutView()
-        if keyCode != nil && modifierFlags != nil {
-            view.shortcutValue = MASShortcut(keyCode: keyCode!, modifierFlags: modifierFlags!)
-        }
-        view.shortcutValueChange = updateList
-        let watcher = view.observe(\.isRecording, changeHandler: APState.shared.onRecordingChange)
-        return (view, watcher)
-    }
-
-    // Whenever a shortcut's value changes, update the list.
-    func updateList(_ sender: Any?) {
-        // Remove nil entries from list (except last).
-        for (i, _) in list.enumerated().reversed() {
-            if list.count > 1 && list[i].0.shortcutValue == nil {
-                let _ = list.remove(at: i)
+    private func newRow(with shortcut: KeyboardShortcuts.Shortcut?) -> Row {
+        var row = Row(recorder: KeyboardShortcuts.RecorderCocoa(shortcut: shortcut), shortcut: shortcut)
+        row.recorder.translatesAutoresizingMaskIntoConstraints = true
+        // RecorderCocoa's onChange must be set after init so we can capture a reference into self.
+        let recorder = row.recorder
+        recorder.onChange = { [weak self] newShortcut in
+            guard let self else { return }
+            if let idx = self.list.firstIndex(where: { $0.recorder === recorder }) {
+                self.list[idx].shortcut = newShortcut
+                self.updateList()
             }
         }
+        return row
+    }
 
-        // Ensure there's always one more shortcut at the end of the list.
-        if list.last?.0.shortcutValue != nil && list.count < APState.shared.defaults.integer(forKey: "maxShortcutsInSequence") {
-            list.append(newShortcut(withKeyCode: nil, modifierFlags: nil))
+    private func updateList() {
+        // Remove cleared rows from the middle of the list, but keep at least one trailing empty row.
+        for i in (0..<list.count).reversed() where list.count > 1 && list[i].shortcut == nil {
+            list.remove(at: i)
+        }
+
+        // Ensure there's always one more empty recorder at the end up to the max.
+        let maxShortcuts = APState.shared.defaults.integer(forKey: "maxShortcutsInSequence")
+        if list.last?.shortcut != nil && list.count < maxShortcuts {
+            list.append(newRow(with: nil))
         }
 
         // Check for any conflicting entries.
         let sequence = listAsSequence
         if sequence.count == 0 {
             updateUI(reason: .NoShortcuts, nil)
+        } else if let conflictingEntry = APState.shared.checkForConflictingSequence(sequence, excluding: entry) {
+            updateUI(reason: .ConflictingShortcuts, conflictingEntry)
         } else {
-            if let conflictingEntry = APState.shared.checkForConflictingSequence(sequence, excluding: entry) {
-                updateUI(reason: .ConflictingShortcuts, conflictingEntry)
-            } else {
-                updateUI(reason: .Okay, nil)
-            }
+            updateUI(reason: .Okay, nil)
         }
 
         tableView.reloadData()
     }
 
-    // Update the view with information regarding a conflicting entry. Entries' sequences conflict
-    // when you cannot fully type sequence `A` without first calling sequence `B` (this makes it
-    // impossible to call sequence `A`, and is therefore forbidden).
     func updateUI(reason: UIStates, _ conflictingEntry: APAppEntry?) {
         switch reason {
         case .ConflictingShortcuts:
@@ -145,32 +144,24 @@ class APSequenceViewController: NSViewController {
         }
     }
 
-    // Animate entering the view, making it the size of `referenceView` and sliding over the top
-    // of it.
-    // FIXME: macOS 10.14 seems to have broken the fade-in animation, but it's quite unstable at
-    // this stage so leaving the fade animation disabled until 10.14 is closer to its release.
     func slideInAndAdd(to referringView: NSView) {
         beforeAdded?()
         referenceView = referringView
-//        self.view.alphaValue = 0.0
         self.view.frame.size = referenceView.frame.size
         self.view.frame.origin = CGPoint(x: referenceView.frame.maxX, y: referenceView.frame.minY)
         referenceView.superview!.addSubview(self.view)
         runAnimation({ _ in
             self.view.animator().frame.origin = referenceView.frame.origin
-//            self.view.animator().alphaValue = 1.0
         }, done: {
             self.afterAdded?()
         })
     }
 
-    // FIXME: see `slideInAndAdd()`.
     func slideOutAndRemove() {
         beforeRemoved?()
         let destination = CGPoint(x: referenceView.frame.maxX, y: referenceView.frame.minY)
         runAnimation({ _ in
             self.view.animator().frame.origin = destination
-//            self.view.animator().alphaValue = 0.0
         }, done: {
             self.view.removeFromSuperview()
             self.afterRemoved?()
@@ -180,7 +171,7 @@ class APSequenceViewController: NSViewController {
 
 extension APSequenceViewController: NSTableViewDelegate {
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        return list[row].0
+        return list[row].recorder
     }
 
     func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {

@@ -4,7 +4,7 @@
 //
 
 import SwiftyJSON
-import CleanroomLogger
+import os
 
 let ENABLED_INDICATOR_ON = "\(APP_NAME): on"
 let ENABLED_INDICATOR_OFF = "\(APP_NAME): off"
@@ -25,14 +25,6 @@ let ICON_REC = setupMenuBarIcon(NSImage(named: NSImage.Name(stringLiteral: "icon
     private let invisibleWindow = NSWindow(contentRect: NSMakeRect(0, 0, 1, 1), styleMask: .borderless, backing: .buffered, defer: false)
 
     func applicationWillFinishLaunching(_ notification: Notification) {
-        let minimumSeverity: LogSeverity = APState.shared.defaults.bool(forKey: "debugMode") ? .debug : .info
-        var logConfigurations: [LogConfiguration] = [
-            RotatingLogFileConfiguration(minimumSeverity: minimumSeverity, daysToKeep: 7, directoryPath: defaultLogPath().path)
-        ]
-        #if DEBUG
-        logConfigurations.append(XcodeLogConfiguration(minimumSeverity: .debug))
-        #endif
-        Log.enable(configuration: logConfigurations)
         APState.shared.loadFromDisk()
     }
 
@@ -56,7 +48,7 @@ let ICON_REC = setupMenuBarIcon(NSImage(named: NSImage.Name(stringLiteral: "icon
         #if !DEBUG
         // Check for accessibility permissions.
         if !UIElement.isProcessTrusted(withPrompt: true) {
-            Log.info?.message("Application does not have Accessibility Permissions, requesting...")
+            Logger.app.info("Application does not have Accessibility Permissions, requesting...")
             let alert = NSAlert()
             alert.messageText = "Action Required"
             alert.informativeText = """
@@ -69,7 +61,7 @@ let ICON_REC = setupMenuBarIcon(NSImage(named: NSImage.Name(stringLiteral: "icon
         }
         #endif
 
-        Log.info?.message("Sucessfully launched.")
+        Logger.app.info("Successfully launched.")
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

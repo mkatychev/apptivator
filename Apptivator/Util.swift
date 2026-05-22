@@ -3,7 +3,7 @@
 //  Apptivator
 //
 
-import CleanroomLogger
+import os
 
 let APP_NAME = Bundle.main.infoDictionary![kCFBundleNameKey as String] as! String
 let APPLE_INTERFACE_STYLE = "AppleInterfaceStyle"
@@ -43,7 +43,7 @@ func launchApplication(at url: URL) -> NSRunningApplication? {
                     process.launch()
                 }
             } catch {
-                Log.error?.message("Could not launch application at \(url): \(error)")
+                Logger.app.error("Could not launch application at \(url.path, privacy: .public): \(error.localizedDescription, privacy: .public)")
             }
         }
     }
@@ -119,7 +119,7 @@ func setRect(ofElement element: UIElement, rect: CGRect) {
         try element.setAttribute(.position, value: rect.origin)
         try element.setAttribute(.size, value: rect.size)
     } catch {
-        Log.error?.message("Failed to set frame of UIElement: \(element), \(error)")
+        Logger.app.error("Failed to set frame of UIElement: \(String(describing: element), privacy: .public), \(error.localizedDescription, privacy: .public)")
     }
 }
 
@@ -140,26 +140,6 @@ func setupMenuBarIcon(_ image: NSImage?) -> NSImage? {
     return image
 }
 
-// When running tests, use a temporary logging path.
-func defaultLogPath() -> URL {
-    var url: URL
-    if ProcessInfo.processInfo.environment["TEST"] != nil {
-        url = URL(fileURLWithPath: "\(NSTemporaryDirectory())\(APP_NAME)-\(UUID().uuidString)-logs/")
-    } else {
-        url = URL(fileURLWithPath: "\(NSHomeDirectory())/Library/Preferences/\(APP_NAME)/logs")
-    }
-
-    // Create directory if it doesn't already exist.
-    do {
-        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
-    } catch {
-        Log.error?.message("Unexpected error creating log directory: \(error)")
-    }
-
-    Log.info?.message("Default Log Path: \(url.path)")
-    return url
-}
-
 // When running tests, use a temporary config file.
 func defaultConfigurationPath() -> URL {
     var url: URL
@@ -169,6 +149,6 @@ func defaultConfigurationPath() -> URL {
         url = URL(fileURLWithPath: "\(NSHomeDirectory())/Library/Preferences/\(APP_NAME)/configuration.json")
     }
 
-    Log.info?.message("Default Config Path: \(url.path)")
+    Logger.app.info("Default Config Path: \(url.path, privacy: .public)")
     return url
 }

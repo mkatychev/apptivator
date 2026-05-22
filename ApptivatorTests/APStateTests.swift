@@ -4,6 +4,7 @@
 //
 
 import XCTest
+import KeyboardShortcuts
 
 @testable import Apptivator
 
@@ -12,22 +13,22 @@ class APStateTests: XCTestCase {
         resetState(withSampleEntries: true)
         let sequences = [
             (true, [ // Conflicts with "Xcode.app"
-                shortcutView(withKeyCode: KEY_A, modifierFlags: CMD_SHIFT),
-                shortcutView(withKeyCode: KEY_B, modifierFlags: CMD_SHIFT),
-                shortcutView(withKeyCode: KEY_C, modifierFlags: CMD_SHIFT)
+                shortcut(withKeyCode: KEY_A, modifierFlags: CMD_SHIFT),
+                shortcut(withKeyCode: KEY_B, modifierFlags: CMD_SHIFT),
+                shortcut(withKeyCode: KEY_C, modifierFlags: CMD_SHIFT)
             ]),
             (true, [ // Conflicts with "Calculator.app"
-                shortcutView(withKeyCode: KEY_A, modifierFlags: CMD_SHIFT),
-                shortcutView(withKeyCode: KEY_D, modifierFlags: CMD_SHIFT),
-                shortcutView(withKeyCode: KEY_A, modifierFlags: CMD_SHIFT)
+                shortcut(withKeyCode: KEY_A, modifierFlags: CMD_SHIFT),
+                shortcut(withKeyCode: KEY_D, modifierFlags: CMD_SHIFT),
+                shortcut(withKeyCode: KEY_A, modifierFlags: CMD_SHIFT)
             ]),
             (true, [ // Conflicts with "Chess.app"
-                shortcutView(withKeyCode: KEY_D, modifierFlags: CMD_SHIFT)
+                shortcut(withKeyCode: KEY_D, modifierFlags: CMD_SHIFT)
             ]),
             (false, [
-                shortcutView(withKeyCode: KEY_E, modifierFlags: CMD_SHIFT),
-                shortcutView(withKeyCode: KEY_F, modifierFlags: CMD_SHIFT),
-                shortcutView(withKeyCode: KEY_G, modifierFlags: CMD_SHIFT)
+                shortcut(withKeyCode: KEY_E, modifierFlags: CMD_SHIFT),
+                shortcut(withKeyCode: KEY_F, modifierFlags: CMD_SHIFT),
+                shortcut(withKeyCode: KEY_G, modifierFlags: CMD_SHIFT)
             ]),
         ]
         for (i, pair) in sequences.enumerated() {
@@ -88,7 +89,7 @@ class APStateTests: XCTestCase {
         // Make changes to the state.
         APState.shared.isEnabled = false
         APState.shared.darkModeEnabled = true
-        APState.shared.addEntry(entry(atURL: URL(fileURLWithPath: "/Applications/Xcode.app"), sequence: [shortcutView(withKeyCode: 120, modifierFlags: 0)]))
+        APState.shared.addEntry(entry(atURL: URL(fileURLWithPath: "/Applications/Xcode.app"), sequence: [shortcut(withKeyCode: 120, modifierFlags: 0)]))
         APState.shared.addEntry(APAppEntry(url: URL(fileURLWithPath: "/Applications/Calculator.app"), config: nil)!)
 
         // Write to disk.
@@ -123,7 +124,9 @@ class APStateTests: XCTestCase {
     }
 
     func isShortcutRegistered(_ keyCode: UInt, _ modifierFlags: UInt) -> Bool {
-        return APState.shared.monitor.isShortcutRegistered(MASShortcut(keyCode: keyCode, modifierFlags: modifierFlags))
+        return APState.shared.monitor.isShortcutRegistered(
+            KeyboardShortcuts.Shortcut(cocoaKeyCode: keyCode, cocoaModifierFlags: modifierFlags)
+        )
     }
 
     func getTemporaryFilePath() -> URL {
@@ -142,20 +145,20 @@ func resetState(withSampleEntries: Bool) {
     if withSampleEntries {
         [
             entry(atURL: URL(fileURLWithPath: "/Applications/Xcode.app"), sequence: [
-                shortcutView(withKeyCode: KEY_A, modifierFlags: CMD_SHIFT),
-                shortcutView(withKeyCode: KEY_B, modifierFlags: CMD_SHIFT)
+                shortcut(withKeyCode: KEY_A, modifierFlags: CMD_SHIFT),
+                shortcut(withKeyCode: KEY_B, modifierFlags: CMD_SHIFT)
             ]),
             entry(atURL: URL(fileURLWithPath: "/Applications/Calculator.app"), sequence: [
-                shortcutView(withKeyCode: KEY_A, modifierFlags: CMD_SHIFT),
-                shortcutView(withKeyCode: KEY_D, modifierFlags: CMD_SHIFT)
+                shortcut(withKeyCode: KEY_A, modifierFlags: CMD_SHIFT),
+                shortcut(withKeyCode: KEY_D, modifierFlags: CMD_SHIFT)
             ]),
             entry(atURL: URL(fileURLWithPath: "/Applications/Chess.app"), sequence: [
-                shortcutView(withKeyCode: KEY_D, modifierFlags: CMD_SHIFT)
+                shortcut(withKeyCode: KEY_D, modifierFlags: CMD_SHIFT)
             ]),
             entry(atURL: URL(fileURLWithPath: "/Applications/System Preferences.app"), sequence: [
-                shortcutView(withKeyCode: KEY_G, modifierFlags: CMD_SHIFT),
-                shortcutView(withKeyCode: KEY_F, modifierFlags: CMD_SHIFT),
-                shortcutView(withKeyCode: KEY_E, modifierFlags: CMD_SHIFT)
+                shortcut(withKeyCode: KEY_G, modifierFlags: CMD_SHIFT),
+                shortcut(withKeyCode: KEY_F, modifierFlags: CMD_SHIFT),
+                shortcut(withKeyCode: KEY_E, modifierFlags: CMD_SHIFT)
             ])
         ].forEach({ APState.shared.addEntry($0) })
     }

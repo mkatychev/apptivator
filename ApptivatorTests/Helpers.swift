@@ -4,7 +4,7 @@
 //
 
 import XCTest
-import MASShortcut
+import KeyboardShortcuts
 @testable import Apptivator
 
 let KEY_A: UInt = 0
@@ -18,13 +18,11 @@ let OPT: UInt = 524288
 let CMD: UInt = 1048576
 let CMD_SHIFT: UInt = 1179648
 
-func shortcutView(withKeyCode keyCode: UInt, modifierFlags: UInt) -> MASShortcutView {
-    let shortcutView = MASShortcutView()
-    shortcutView.shortcutValue = MASShortcut(keyCode: keyCode, modifierFlags: modifierFlags)
-    return shortcutView
+func shortcut(withKeyCode keyCode: UInt, modifierFlags: UInt) -> KeyboardShortcuts.Shortcut {
+    KeyboardShortcuts.Shortcut(cocoaKeyCode: keyCode, cocoaModifierFlags: modifierFlags)
 }
 
-func entry(atURL url: URL, sequence: [MASShortcutView]) -> APAppEntry {
+func entry(atURL url: URL, sequence: [KeyboardShortcuts.Shortcut]) -> APAppEntry {
     let entry = APAppEntry(url: url, config: nil)!
     entry.sequence = sequence
     return entry

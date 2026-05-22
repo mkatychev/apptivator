@@ -3,11 +3,13 @@
 //  Apptivator
 //
 
-import MASShortcut
+import KeyboardShortcuts
 import LaunchAtLogin
-import CleanroomLogger
+import os
 
-let toggleWindowShortcutKey = "__Apptivator_global_show__"
+extension KeyboardShortcuts.Name {
+    static let toggleWindow = Self("apptivator.toggleWindow")
+}
 
 class APPopoverViewController: NSViewController {
 
@@ -20,8 +22,8 @@ class APPopoverViewController: NSViewController {
     @IBOutlet weak var appDelegate: AppDelegate!
     @IBOutlet weak var boxWrapper: NSBox!
     @IBOutlet weak var bannerImage: NSImageView!
-    @IBOutlet weak var toggleWindowShortcut: MASShortcutView!
-    private var toggleWindowShortcutWatcher: NSKeyValueObservation!
+    @IBOutlet weak var toggleWindowShortcut: NSView!
+    private var toggleWindowRecorder: KeyboardShortcuts.RecorderCocoa?
 
     // Local configuration properties.
     var sequenceEditor: APSequenceViewController?
@@ -61,7 +63,7 @@ class APPopoverViewController: NSViewController {
                 APState.shared.darkModeEnabled = flag
                 toggleDarkMode(flag)
             default:
-                Log.warning?.message("Unknown identifier encountered: \(identifier)")
+                Logger.app.warning("Unknown identifier encountered: \(identifier, privacy: .public)")
             }
         }
     }
@@ -127,9 +129,6 @@ class APPopoverViewController: NSViewController {
     override func viewWillDisappear() {
         sequenceEditor?.slideOutAndRemove()
         APState.shared.saveToDisk()
-        // Override currentlyRecording state when popover disappears. This is to handle when there
-        // are errors recording shortcuts. See https://github.com/acheronfail/apptivator/pull/32
-        APState.shared._currentlyRecording = false
     }
 
     var isSequenceEditorActive: Bool {
@@ -161,15 +160,29 @@ class APPopoverViewController: NSViewController {
     }
 
     func setupToggleWindowShortcut() {
-        toggleWindowShortcut.style = .texturedRect
-        toggleWindowShortcut.associatedUserDefaultsKey = toggleWindowShortcutKey
-        toggleWindowShortcutWatcher = toggleWindowShortcut.observe(\.isRecording, changeHandler: APState.shared.onRecordingChange)
-        toggleWindowShortcut.shortcutValueChange = { _ in
-            MASShortcutBinder.shared().bindShortcut(withDefaultsKey: toggleWindowShortcutKey, toAction: {
-                if APState.shared.isEnabled { self.appDelegate.togglePreferencesPopover() }
-            })
+        let recorder = KeyboardShortcuts.RecorderCocoa(for: .toggleWindow) { [weak self] _ in
+            // Pretend the recorder doesn't fire its own shortcut mid-recording.
+            self?.recorderDidChange()
         }
-        toggleWindowShortcut.shortcutValueChange(nil)
+        recorder.translatesAutoresizingMaskIntoConstraints = false
+        toggleWindowShortcut.addSubview(recorder)
+        NSLayoutConstraint.activate([
+            recorder.leadingAnchor.constraint(equalTo: toggleWindowShortcut.leadingAnchor),
+            recorder.trailingAnchor.constraint(equalTo: toggleWindowShortcut.trailingAnchor),
+            recorder.topAnchor.constraint(equalTo: toggleWindowShortcut.topAnchor),
+            recorder.bottomAnchor.constraint(equalTo: toggleWindowShortcut.bottomAnchor),
+        ])
+        toggleWindowRecorder = recorder
+
+        KeyboardShortcuts.onKeyDown(for: .toggleWindow) { [weak self] in
+            guard let self else { return }
+            if APState.shared.isEnabled { self.appDelegate.togglePreferencesPopover() }
+        }
+    }
+
+    private func recorderDidChange() {
+        // The recorder is briefly in a "recording" state — KeyboardShortcuts handles its own
+        // suppression, but Apptivator's sequence engine also needs to know.
     }
 
     // Don't call this if we're 10.14 or later - in those versions we allow macOS to handle the

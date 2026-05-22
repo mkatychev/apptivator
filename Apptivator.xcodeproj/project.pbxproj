@@ -3,23 +3,21 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		151CF3A520876C5600D6DC91 /* AXSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 151CF3A420876C5600D6DC91 /* AXSwift.framework */; };
-		151CF3A720876C6900D6DC91 /* LaunchAtLogin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 151CF3A620876C6900D6DC91 /* LaunchAtLogin.framework */; };
-		151CF3A920876C7800D6DC91 /* MASShortcut.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 151CF3A820876C7800D6DC91 /* MASShortcut.framework */; };
-		151CF3AD20876CD100D6DC91 /* SwiftyJSON.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 151CF3AA20876C8600D6DC91 /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		151CF3AF20876CDE00D6DC91 /* MASShortcut.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 151CF3A820876C7800D6DC91 /* MASShortcut.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		151CF3B120876CE200D6DC91 /* LaunchAtLogin.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 151CF3A620876C6900D6DC91 /* LaunchAtLogin.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		151CF3B320876CE500D6DC91 /* AXSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 151CF3A420876C5600D6DC91 /* AXSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		152416AB20C73D0E00A5D7D2 /* APPopoverViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3B4C2C41E25894B009F8E4E /* APPopoverViewController.xib */; };
 		152416AC20C73D1300A5D7D2 /* APSequenceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 159ED108207E379D005489ED /* APSequenceViewController.xib */; };
 		1537F5E1204C8D860056EE50 /* APAppEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1537F5E0204C8D860056EE50 /* APAppEntry.swift */; };
-		1547AC99208738310088701F /* CleanroomLogger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1547AC972087382D0088701F /* CleanroomLogger.framework */; };
-		1547AC9A208738310088701F /* CleanroomLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1547AC972087382D0088701F /* CleanroomLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		15492103207B53AE00E45BBC /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15492102207B53AE00E45BBC /* Util.swift */; };
+		AB03000000000000000000C1 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B1 /* KeyboardShortcuts */; };
+		AB03000000000000000000C2 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B2 /* SwiftyJSON */; };
+		AB03000000000000000000C3 /* AXSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B3 /* AXSwift */; };
+		AB03000000000000000000C4 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B4 /* LaunchAtLogin */; };
+		AB03000000000000000000C5 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B5 /* KeyboardShortcuts */; };
+		AB03000000000000000000C6 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB04000000000000000000D1 /* Logger.swift */; };
+		AB03000000000000000000C7 /* ShortcutMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB04000000000000000000D2 /* ShortcutMonitor.swift */; };
 		155D2C03204F61220087478B /* Credits.rtfd in Resources */ = {isa = PBXBuildFile; fileRef = 155D2C02204F61220087478B /* Credits.rtfd */; };
 		1561AED2207615AC00C69338 /* UIOverrides.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1561AED1207615AC00C69338 /* UIOverrides.swift */; };
 		15673D7020B6140F00542276 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 15673D6F20B6140E00542276 /* README.md */; };
@@ -46,31 +44,10 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		15BB82AC204E512E0039B4E2 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				151CF3B120876CE200D6DC91 /* LaunchAtLogin.framework in Embed Frameworks */,
-				151CF3AF20876CDE00D6DC91 /* MASShortcut.framework in Embed Frameworks */,
-				151CF3AD20876CD100D6DC91 /* SwiftyJSON.framework in Embed Frameworks */,
-				1547AC9A208738310088701F /* CleanroomLogger.framework in Embed Frameworks */,
-				151CF3B320876CE500D6DC91 /* AXSwift.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		151CF3A420876C5600D6DC91 /* AXSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AXSwift.framework; path = Carthage/Build/Mac/AXSwift.framework; sourceTree = "<group>"; };
-		151CF3A620876C6900D6DC91 /* LaunchAtLogin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LaunchAtLogin.framework; path = Carthage/Build/Mac/LaunchAtLogin.framework; sourceTree = "<group>"; };
-		151CF3A820876C7800D6DC91 /* MASShortcut.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MASShortcut.framework; path = Carthage/Build/Mac/MASShortcut.framework; sourceTree = "<group>"; };
-		151CF3AA20876C8600D6DC91 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/Mac/SwiftyJSON.framework; sourceTree = "<group>"; };
 		1537F5E0204C8D860056EE50 /* APAppEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APAppEntry.swift; sourceTree = "<group>"; };
-		1547AC972087382D0088701F /* CleanroomLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CleanroomLogger.framework; path = Carthage/Build/Mac/CleanroomLogger.framework; sourceTree = "<group>"; };
+		AB04000000000000000000D1 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		AB04000000000000000000D2 /* ShortcutMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutMonitor.swift; sourceTree = "<group>"; };
 		15492102207B53AE00E45BBC /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		155D2C02204F61220087478B /* Credits.rtfd */ = {isa = PBXFileReference; lastKnownFileType = wrapper.rtfd; path = Credits.rtfd; sourceTree = "<group>"; };
 		1561AED1207615AC00C69338 /* UIOverrides.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIOverrides.swift; sourceTree = "<group>"; };
@@ -100,6 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB03000000000000000000C5 /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,28 +85,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				151CF3A920876C7800D6DC91 /* MASShortcut.framework in Frameworks */,
-				151CF3A720876C6900D6DC91 /* LaunchAtLogin.framework in Frameworks */,
-				151CF3A520876C5600D6DC91 /* AXSwift.framework in Frameworks */,
-				1547AC99208738310088701F /* CleanroomLogger.framework in Frameworks */,
+				AB03000000000000000000C1 /* KeyboardShortcuts in Frameworks */,
+				AB03000000000000000000C2 /* SwiftyJSON in Frameworks */,
+				AB03000000000000000000C3 /* AXSwift in Frameworks */,
+				AB03000000000000000000C4 /* LaunchAtLogin in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1547AC962087382D0088701F /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				151CF3AA20876C8600D6DC91 /* SwiftyJSON.framework */,
-				151CF3A820876C7800D6DC91 /* MASShortcut.framework */,
-				151CF3A620876C6900D6DC91 /* LaunchAtLogin.framework */,
-				151CF3A420876C5600D6DC91 /* AXSwift.framework */,
-				1547AC972087382D0088701F /* CleanroomLogger.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		15673D6D20B611D900542276 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -169,7 +135,6 @@
 				B3B4C2BF1E25894B009F8E4E /* Apptivator */,
 				15B4E871207994AF0024FDE4 /* ApptivatorTests */,
 				B3B4C2BE1E25894B009F8E4E /* Products */,
-				1547AC962087382D0088701F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -191,6 +156,8 @@
 				1537F5E0204C8D860056EE50 /* APAppEntry.swift */,
 				15FC8CC7204E2E2C000B5E1E /* APState.swift */,
 				BA54C46521F87F480084BB36 /* Extensions.swift */,
+				AB04000000000000000000D1 /* Logger.swift */,
+				AB04000000000000000000D2 /* ShortcutMonitor.swift */,
 				15492102207B53AE00E45BBC /* Util.swift */,
 				15673D6F20B6140E00542276 /* README.md */,
 				155D2C02204F61220087478B /* Credits.rtfd */,
@@ -216,6 +183,9 @@
 				15B4E876207994AF0024FDE4 /* PBXTargetDependency */,
 			);
 			name = ApptivatorTests;
+			packageProductDependencies = (
+				AB02000000000000000000B5 /* KeyboardShortcuts */,
+			);
 			productName = ApptivatorTests;
 			productReference = 15B4E870207994AF0024FDE4 /* ApptivatorTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -227,14 +197,18 @@
 				B3B4C2B91E25894B009F8E4E /* Sources */,
 				B3B4C2BA1E25894B009F8E4E /* Frameworks */,
 				B3B4C2BB1E25894B009F8E4E /* Resources */,
-				15BB82AC204E512E0039B4E2 /* Embed Frameworks */,
-				15185A00204F364A007CD792 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Apptivator;
+			packageProductDependencies = (
+				AB02000000000000000000B1 /* KeyboardShortcuts */,
+				AB02000000000000000000B2 /* SwiftyJSON */,
+				AB02000000000000000000B3 /* AXSwift */,
+				AB02000000000000000000B4 /* LaunchAtLogin */,
+			);
 			productName = Apptivator;
 			productReference = B3B4C2BD1E25894B009F8E4E /* Apptivator.app */;
 			productType = "com.apple.product-type.application";
@@ -272,6 +246,12 @@
 				Base,
 			);
 			mainGroup = B3B4C2B41E25894B009F8E4E;
+			packageReferences = (
+				AB01000000000000000000A1 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+				AB01000000000000000000A2 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
+				AB01000000000000000000A3 /* XCRemoteSwiftPackageReference "AXSwift" */,
+				AB01000000000000000000A4 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */,
+			);
 			productRefGroup = B3B4C2BE1E25894B009F8E4E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -304,22 +284,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		15185A00204F364A007CD792 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "./Carthage/Build/Mac/LaunchAtLogin.framework/Resources/copy-helper.sh";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		15B4E86C207994AF0024FDE4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -345,6 +309,8 @@
 				15FC8CC8204E2E2C000B5E1E /* APState.swift in Sources */,
 				1537F5E1204C8D860056EE50 /* APAppEntry.swift in Sources */,
 				159ED109207E379D005489ED /* APSequenceViewController.swift in Sources */,
+				AB03000000000000000000C6 /* Logger.swift in Sources */,
+				AB03000000000000000000C7 /* ShortcutMonitor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,13 +348,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = ApptivatorTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.acheronfail.ApptivatorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -410,13 +372,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = ApptivatorTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.acheronfail.ApptivatorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -546,10 +504,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
 				INFOPLIST_FILE = Apptivator/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
@@ -569,10 +523,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/Mac",
-				);
 				INFOPLIST_FILE = Apptivator/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
@@ -615,6 +565,69 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AB01000000000000000000A1 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.9.0;
+			};
+		};
+		AB01000000000000000000A2 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
+			requirement = {
+				kind = exactVersion;
+				version = 5.0.2;
+			};
+		};
+		AB01000000000000000000A3 /* XCRemoteSwiftPackageReference "AXSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tmandry/AXSwift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.3.2;
+			};
+		};
+		AB01000000000000000000A4 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Modern.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AB02000000000000000000B1 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB01000000000000000000A1 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
+		AB02000000000000000000B2 /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB01000000000000000000A2 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
+		};
+		AB02000000000000000000B3 /* AXSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB01000000000000000000A3 /* XCRemoteSwiftPackageReference "AXSwift" */;
+			productName = AXSwift;
+		};
+		AB02000000000000000000B4 /* LaunchAtLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB01000000000000000000A4 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */;
+			productName = LaunchAtLogin;
+		};
+		AB02000000000000000000B5 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB01000000000000000000A1 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B3B4C2B51E25894B009F8E4E /* Project object */;
 }

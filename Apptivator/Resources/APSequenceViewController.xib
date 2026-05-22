@@ -51,7 +51,7 @@
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                             <prototypeCellViews>
-                                                <customView id="KV3-gJ-AzQ" customClass="MASShortcutView">
+                                                <customView id="KV3-gJ-AzQ">
                                                     <rect key="frame" x="1" y="1" width="140" height="19"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 </customView>

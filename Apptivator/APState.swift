@@ -4,9 +4,9 @@
 //
 
 import SwiftyJSON
-import MASShortcut
+import KeyboardShortcuts
 import LaunchAtLogin
-import CleanroomLogger
+import os
 
 @objcMembers class APState: NSObject {
     // Only one instance of this class should be used at a time.
@@ -18,8 +18,8 @@ import CleanroomLogger
     // Location of our serialised application state.
     let savePath: URL
 
-    // Easier access to the shared instance of MASShortcutMonitor.
-    var monitor: MASShortcutMonitor! = MASShortcutMonitor.shared()
+    // Adapter around KeyboardShortcuts that handles dynamic register/unregister with deduplication.
+    let monitor = ShortcutMonitor.shared
     // UserDefaults is used to provide some experimental overrides.
     let defaults: UserDefaults = UserDefaults.standard
     // A Timer to handle the delay between keypresses in a sequence. When this runs out, then the
@@ -33,12 +33,6 @@ import CleanroomLogger
     private var launchAppAtLogin = LaunchAtLogin.isEnabled
     // Don't fire any shortcuts if user is recording a new shortcut.
     private var currentlyRecording = false
-    // This is intentionally public and prefixed with "_" because *it should not be used*, except as
-    // a workaround for a limitation of MASShortcut. See https://github.com/acheronfail/apptivator/pull/32
-    var _currentlyRecording: Bool {
-        get { return currentlyRecording }
-        set { currentlyRecording = newValue }
-    }
 
     // Whether or not the app is globally enabled.
     private var _isEnabled = true
@@ -70,12 +64,7 @@ import CleanroomLogger
             "showPopoverOnScreenWithMouse": false
         ])
 
-        // Allow all shortcuts.
-        // NOTE: this feature comes from a custom fork of MASShortcut.
-        // See https://github.com/acheronfail/MASShortcut/tree/custom
-        MASShortcutValidator.shared().allowAnyShortcut = true
-
-        Log.info?.message("APState initialised at \(url.path)")
+        Logger.app.info("APState initialised at \(url.path, privacy: .public)")
     }
 
     // Get a specific entry at the given index.
@@ -94,16 +83,14 @@ import CleanroomLogger
         registerShortcutsIfEnabled()
     }
 
-    // In order for an entry to be cleaned up by ARC, there must be no more references to it.
-    // MASShortcutMonitor keeps a reference to the `shortcutValue`, so unregister the shortcut here.
     func removeEntry(at index: Int) {
         let entry = entries.remove(at: index)
-        entry.sequence.forEach({ shortcutView in
-            if monitor.isShortcutRegistered(shortcutView.shortcutValue) {
-                monitor.unregisterShortcut(shortcutView.shortcutValue)
+        entry.sequence.forEach({ shortcut in
+            if monitor.isShortcutRegistered(shortcut) {
+                monitor.unregisterShortcut(shortcut)
             }
-            shortcutView.shortcutValue = nil
         })
+        entry.sequence = []
         registerShortcutsIfEnabled()
     }
 
@@ -111,9 +98,9 @@ import CleanroomLogger
         entries.sort(by: comparator)
     }
 
-    // Disable all shortcuts when the user is recording a shortcut.
-    func onRecordingChange<Value>(_ view: MASShortcutView, _ change: NSKeyValueObservedChange<Value>) {
-        currentlyRecording = view.isRecording
+    // Disable all shortcuts while the user is recording a new one.
+    func setCurrentlyRecording(_ isRecording: Bool) {
+        currentlyRecording = isRecording
     }
 
     // This resets the shortcut state to its initial setting. This should be called whenever a
@@ -124,14 +111,13 @@ import CleanroomLogger
         }
     }
 
-    // Unregister all previously registered application shortcuts. We can't just use
-    // monitor.unregisterAllShortcuts() since that unregisters *all* bindings (even those bound
-    // with MASShortcutBinder).
+    // Unregister all previously registered application shortcuts. We only unregister the ones
+    // our own entries hold, not e.g. the popover's toggle-window shortcut.
     func unregisterShortcuts() {
         entries.forEach({ entry in
-            entry.sequence.forEach({ shortcutView in
-                if monitor.isShortcutRegistered(shortcutView.shortcutValue) {
-                    monitor.unregisterShortcut(shortcutView.shortcutValue)
+            entry.sequence.forEach({ shortcut in
+                if monitor.isShortcutRegistered(shortcut) {
+                    monitor.unregisterShortcut(shortcut)
                 }
             })
         })
@@ -148,7 +134,7 @@ import CleanroomLogger
         var count = 0
         entries.forEach({ entry in
             if index < entry.sequence.count {
-                let shortcut = entry.sequence[index].shortcutValue!
+                let shortcut = entry.sequence[index]
                 // If this is the first shortcut (index == 0) then bind all the first shortcut keys.
                 if index == 0 {
                     if !monitor.isShortcutRegistered(shortcut) {
@@ -161,8 +147,8 @@ import CleanroomLogger
                 // If this is a sequential shortcut (index > 0), then only bind the next shortcuts
                 // at the given index, whose previous shortcut was hit.
                 let (lastKeyCode, lastModifierFlags) = last!
-                let prev = entry.sequence[index - 1].shortcutValue!
-                if prev.keyCode == lastKeyCode && prev.modifierFlags == lastModifierFlags {
+                let prev = entry.sequence[index - 1]
+                if prev.cocoaKeyCode == lastKeyCode && prev.cocoaModifierFlags == lastModifierFlags {
                     if !monitor.isShortcutRegistered(shortcut) {
                         monitor.register(shortcut, withAction: { self.keyFired(index + 1, entry, shortcut) })
                         count += 1
@@ -171,7 +157,7 @@ import CleanroomLogger
             }
         })
 
-        Log.debug?.message("Registered \(count)/\(entries.count) shortcuts at index: \(index), last: \(String(describing: last)).")
+        Logger.app.debug("Registered \(count, privacy: .public)/\(self.entries.count, privacy: .public) shortcuts at index: \(index, privacy: .public), last: \(String(describing: last), privacy: .public).")
 
         // If this is a sequential shortcut, then start a timer to reset back to the initial state
         // if no other shortcuts were hit.
@@ -182,14 +168,14 @@ import CleanroomLogger
                 self.appDelegate.setMenuBarIcon(ICON_ON)
                 self.sequenceTimer = nil
                 self.registerShortcuts(atIndex: 0, last: nil)
-                Log.debug?.message("Resetting shortcut state.")
+                Logger.app.debug("Resetting shortcut state.")
             }
         }
     }
 
     // This is called when a key is hit in a sequence of shortcuts. If it's the last shortcut, it
     // will activate the app, otherwise it will just advance the sequence along.
-    private func keyFired(_ i: Int, _ entry: APAppEntry, _ shortcut: MASShortcut) {
+    private func keyFired(_ i: Int, _ entry: APAppEntry, _ shortcut: KeyboardShortcuts.Shortcut) {
         if currentlyRecording { return }
         if i > 0 { sequenceTimer?.invalidate() }
 
@@ -198,10 +184,10 @@ import CleanroomLogger
             entry.apptivate()
             registerShortcuts(atIndex: 0, last: nil)
             appDelegate.setMenuBarIcon(ICON_ON)
-            Log.debug?.message("Apptivating \(entry.name).")
+            Logger.app.debug("Apptivating \(entry.name, privacy: .public).")
         } else {
             // Advance shortcut state with last shortcut and the number of shortcuts hit.
-            let last = (shortcut.keyCode, shortcut.modifierFlags)
+            let last = (shortcut.cocoaKeyCode, shortcut.cocoaModifierFlags)
             registerShortcuts(atIndex: i, last: last)
         }
     }
@@ -209,7 +195,7 @@ import CleanroomLogger
     // This checks the given sequences to see if it conflicts with another sequence. Shortcut
     // sequences must have unique prefixes, so that each one can be distinguished from another.
     // See `APSequenceViewController.updateUIWith()`.
-    func checkForConflictingSequence(_ otherSequence: [MASShortcutView], excluding otherEntry: APAppEntry?) -> APAppEntry? {
+    func checkForConflictingSequence(_ otherSequence: [KeyboardShortcuts.Shortcut], excluding otherEntry: APAppEntry?) -> APAppEntry? {
         // It doesn't make sense to call this function with an empty sequence.
         assert(otherSequence.count > 0, "tried to check sequence with count == 0")
 
@@ -217,7 +203,7 @@ import CleanroomLogger
             if entry.sequence.count == 0 || entry === otherEntry { return false }
             var wasConflict = true
             for (a, b) in zip(otherSequence, entry.sequence) {
-                if a.shortcutValue != b.shortcutValue {
+                if a != b {
                     wasConflict = false
                     break
                 }
@@ -230,7 +216,7 @@ import CleanroomLogger
     // Loads the app state (JSON) from disk - if the file exists, otherwise it does nothing.
     func loadFromDisk() {
         // Reset the state before loading from disk.
-        _currentlyRecording = false
+        currentlyRecording = false
         _isEnabled = true
         sequenceTimer = nil
 
@@ -248,7 +234,7 @@ import CleanroomLogger
             // Ignore error when there's no file.
             let err = error as NSError
             if err.domain != NSCocoaErrorDomain && err.code != CocoaError.fileReadNoSuchFile.rawValue {
-                Log.error?.message("Unexpected error loading application state from disk: \(error)")
+                Logger.app.error("Unexpected error loading application state from disk: \(error.localizedDescription, privacy: .public)")
             }
         }
 
@@ -268,7 +254,7 @@ import CleanroomLogger
                 case "entries":
                     entries = APAppEntry.deserialiseList(fromJSON: value)
                 default:
-                    Log.warning?.message("unknown key '\(key)' encountered in json")
+                    Logger.app.warning("unknown key '\(key, privacy: .public)' encountered in json")
                 }
             }
 
@@ -276,7 +262,7 @@ import CleanroomLogger
                 darkModeEnabled = appleInterfaceStyleIsDark()
             }
 
-            Log.info?.message("Loaded config from disk")
+            Logger.app.info("Loaded config from disk")
         }
     }
 
@@ -297,12 +283,12 @@ import CleanroomLogger
                 let configDir = savePath.deletingLastPathComponent()
                 try FileManager.default.createDirectory(atPath: configDir.path, withIntermediateDirectories: true, attributes: nil)
                 try jsonString.write(to: savePath, atomically: false, encoding: .utf8)
-                Log.info?.message("Saved config to disk")
+                Logger.app.info("Saved config to disk")
             } else {
-                Log.error?.message("Could not serialise config")
+                Logger.app.error("Could not serialise config")
             }
         } catch {
-            Log.error?.message("Unexpected error saving application state to disk: \(error)")
+            Logger.app.error("Unexpected error saving application state to disk: \(error.localizedDescription, privacy: .public)")
         }
     }
 }
