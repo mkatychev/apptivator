@@ -47,18 +47,31 @@ let ICON_REC = setupMenuBarIcon(NSImage(named: NSImage.Name(stringLiteral: "icon
         popoverViewController.reloadView()
 
         #if !DEBUG
-        // Check for accessibility permissions.
-        if !UIElement.isProcessTrusted(withPrompt: true) {
-            Logger.app.info("Application does not have Accessibility Permissions, requesting...")
+        // Check for accessibility permissions. `withPrompt: false` — we never want the system
+        // dialog (which re-fires on every launch for ad-hoc-signed builds since TCC can't
+        // stably identify them). The custom alert below is the one-shot user nudge; we suppress
+        // it after the first time via UserDefaults so it doesn't nag once acknowledged.
+        let hasAX = UIElement.isProcessTrusted(withPrompt: false)
+        let alreadyNagged = APState.shared.defaults.bool(forKey: "axPermissionNagShown")
+        if !hasAX && !alreadyNagged {
+            Logger.app.info("Application does not have Accessibility Permissions; nudging user.")
             let alert = NSAlert()
-            alert.messageText = "Action Required"
+            alert.messageText = "Accessibility Access Required"
             alert.informativeText = """
-            \(APP_NAME) requires access to the accessibility API in order to hide/show other application's windows.\n
-            Please open System Preferences and allow \(APP_NAME) access.\n
-            System Preferences -> Security & Privacy -> Privacy
+            \(APP_NAME) needs Accessibility access to position windows and observe when other apps lose focus.
+
+            Open System Settings → Privacy & Security → Accessibility, then enable \(APP_NAME).
+
+            Switching to apps via hotkeys works without this permission; the extras (move-to-screen-with-mouse, hide-when-deactivated) do not.
             """
             alert.alertStyle = .warning
-            alert.runModal()
+            alert.addButton(withTitle: "Open System Settings")
+            alert.addButton(withTitle: "Later")
+            if alert.runModal() == .alertFirstButtonReturn,
+               let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
+                NSWorkspace.shared.open(url)
+            }
+            APState.shared.defaults.set(true, forKey: "axPermissionNagShown")
         }
         #endif
 

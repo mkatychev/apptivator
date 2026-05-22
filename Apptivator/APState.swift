@@ -6,11 +6,29 @@
 import SwiftyJSON
 import KeyboardShortcuts
 import LaunchAtLogin
+import AXSwift
 import os
 
 @objcMembers class APState: NSObject {
     // Only one instance of this class should be used at a time.
     static var shared = APState(atPath: defaultConfigurationPath())
+
+    // AX trust is checked on every hotkey fire and every AX-notification. Hitting TCC that
+    // often is wasteful and on some macOS versions interacts badly with the trust cache; we
+    // poll at most once per second.
+    private static var axTrustCacheValue = false
+    private static var axTrustCacheTime: TimeInterval = 0
+    private static let axTrustCacheTTL: TimeInterval = 1.0
+    static func cachedAccessibilityTrust() -> Bool {
+        let now = Date().timeIntervalSinceReferenceDate
+        if now - axTrustCacheTime < axTrustCacheTTL { return axTrustCacheValue }
+        axTrustCacheValue = UIElement.isProcessTrusted(withPrompt: false)
+        axTrustCacheTime = now
+        return axTrustCacheValue
+    }
+    static func invalidateAccessibilityTrustCache() {
+        axTrustCacheTime = 0
+    }
 
     // A reference to the Application's AppDelegate (used to set the menu bar icon).
     let appDelegate = NSApp.delegate as! AppDelegate

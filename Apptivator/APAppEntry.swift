@@ -73,7 +73,10 @@ class APAppEntry: CustomDebugStringConvertible {
     private var observer: Observer?
 
     var isActive: Bool { return self.observer != nil }
-    var isEnabled: Bool { return APState.shared.isEnabled && UIElement.isProcessTrusted(withPrompt: true) }
+    var isEnabled: Bool { return APState.shared.isEnabled }
+    // AX permission is only needed for window-positioning and the deactivation observer;
+    // basic activate/hide/launch via NSRunningApplication / NSWorkspace works without it.
+    var hasAccessibility: Bool { return APState.cachedAccessibilityTrust() }
     var sequence: [KeyboardShortcuts.Shortcut] = [] {
         didSet {
             // Unregister old shortcuts if any of them are registered. `state.registerShortcuts()` will
@@ -119,22 +122,25 @@ class APAppEntry: CustomDebugStringConvertible {
 
     // Where the magic happens!
     func apptivate() {
-        if self.isEnabled {
-            if let runningApp = findRunningApp(withURL: self.url) {
-                if !runningApp.isActive {
-                    if self.config.showOnScreenWithMouse { self.showOnScreenWithMouse(runningApp) }
-                    if runningApp.isHidden { runningApp.unhide() }
-                    runningApp.activate(options: .activateIgnoringOtherApps)
-                    self.createObserver(runningApp)
-                } else if self.config.hideWithShortcutWhenActive {
-                    runningApp.hide()
+        guard self.isEnabled else { return }
+        if let runningApp = findRunningApp(withURL: self.url) {
+            if !runningApp.isActive {
+                if self.config.showOnScreenWithMouse && self.hasAccessibility {
+                    self.showOnScreenWithMouse(runningApp)
                 }
-            } else if self.config.launchIfNotRunning {
-                // Launch the application if it's not running, and after a delay attempt to
-                // create an observer to watch it for events. We have to wait since we cannot
-                // start observing an application if it hasn't fully launched.
-                // TODO: there's probably a better way of doing this.
-                let _ = launchApplication(at: self.url)
+                if runningApp.isHidden { runningApp.unhide() }
+                runningApp.activate(options: .activateIgnoringOtherApps)
+                if self.hasAccessibility { self.createObserver(runningApp) }
+            } else if self.config.hideWithShortcutWhenActive {
+                runningApp.hide()
+            }
+        } else if self.config.launchIfNotRunning {
+            // Launch the application if it's not running, and after a delay attempt to
+            // create an observer to watch it for events. We have to wait since we cannot
+            // start observing an application if it hasn't fully launched.
+            // TODO: there's probably a better way of doing this.
+            let _ = launchApplication(at: self.url)
+            if self.hasAccessibility {
                 DispatchQueue.main.asyncAfter(deadline: .now() + APP_LAUNCH_DELAY) {
                     self.createObserver(findRunningApp(withURL: self.url))
                 }
@@ -180,8 +186,9 @@ class APAppEntry: CustomDebugStringConvertible {
                 return
             }
 
-            // If enabled, respond to events.
-            if self.isEnabled && (event == .applicationDeactivated && self.config.hideWhenDeactivated) {
+            // If enabled, respond to events. (`hide()` itself doesn't need AX — but reaching
+            // this listener does, since the observer is AX-driven.)
+            if self.isEnabled && event == .applicationDeactivated && self.config.hideWhenDeactivated {
                 runningApp.hide()
             }
         }

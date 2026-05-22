@@ -52,6 +52,13 @@ if [[ ! -d "${ARCHIVED_APP}" ]]; then
 fi
 cp -R "${ARCHIVED_APP}" "${APP_PATH}"
 
+# Re-sign ad-hoc with a stable identifier matching the bundle ID. xcodebuild's archive
+# defaults the codesign identifier to the product name ("Apptivator"), which makes TCC
+# treat the app as a different identity each rebuild and prompts for Accessibility again.
+BUNDLE_ID="$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "${APP_PATH}/Contents/Info.plist")"
+echo "==> Re-signing ad-hoc with identifier ${BUNDLE_ID}"
+codesign --force --deep --sign - --identifier "${BUNDLE_ID}" "${APP_PATH}"
+
 # Pull the marketing version out of the built Info.plist for a friendlier .dmg name.
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' \
     "${APP_PATH}/Contents/Info.plist" 2>/dev/null || echo "")"
