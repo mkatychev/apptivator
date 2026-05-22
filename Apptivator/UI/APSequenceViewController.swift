@@ -27,9 +27,8 @@ class APSequenceViewController: NSViewController {
     var referenceView: NSView!
     var defaultTextColor: NSColor!
 
-    // Each row is a (recorder, currentShortcutValueOrNil). The trailing row always has a nil value
-    // (an empty recorder ready for the user to record into).
     private struct Row {
+        let name: KeyboardShortcuts.Name
         let recorder: KeyboardShortcuts.RecorderCocoa
         var shortcut: KeyboardShortcuts.Shortcut?
     }
@@ -39,8 +38,8 @@ class APSequenceViewController: NSViewController {
     }
     var entry: APAppEntry! {
         didSet {
-            list = entry.sequence.map { newRow(with: $0) }
-            list.append(newRow(with: nil))
+            list = entry.sequence.enumerated().map { newRow(at: $0.offset, with: $0.element) }
+            list.append(newRow(at: list.count, with: nil))
         }
     }
 
@@ -80,31 +79,45 @@ class APSequenceViewController: NSViewController {
         updateList()
     }
 
-    private func newRow(with shortcut: KeyboardShortcuts.Shortcut?) -> Row {
-        var row = Row(recorder: KeyboardShortcuts.RecorderCocoa(shortcut: shortcut), shortcut: shortcut)
-        row.recorder.translatesAutoresizingMaskIntoConstraints = true
-        // RecorderCocoa's onChange must be set after init so we can capture a reference into self.
-        let recorder = row.recorder
-        recorder.onChange = { [weak self] newShortcut in
+    private static var nextEditorID: Int = 0
+    private func makeRowName() -> KeyboardShortcuts.Name {
+        Self.nextEditorID += 1
+        return KeyboardShortcuts.Name("apptivator.editor.row.\(Self.nextEditorID)")
+    }
+
+    private func newRow(at index: Int, with shortcut: KeyboardShortcuts.Shortcut?) -> Row {
+        let name = makeRowName()
+        KeyboardShortcuts.setShortcut(shortcut, for: name)
+        let recorder = KeyboardShortcuts.RecorderCocoa(for: name) { [weak self] newShortcut in
             guard let self else { return }
-            if let idx = self.list.firstIndex(where: { $0.recorder === recorder }) {
+            if let idx = self.list.firstIndex(where: { $0.name == name }) {
                 self.list[idx].shortcut = newShortcut
                 self.updateList()
             }
         }
-        return row
+        recorder.translatesAutoresizingMaskIntoConstraints = true
+        return Row(name: name, recorder: recorder, shortcut: shortcut)
+    }
+
+    private func clearAllRowBindings() {
+        // The editor's row Names are scratch — clear their persisted shortcuts so they don't
+        // sit around as no-op global hotkeys after the editor closes.
+        for row in list {
+            KeyboardShortcuts.setShortcut(nil, for: row.name)
+        }
     }
 
     private func updateList() {
         // Remove cleared rows from the middle of the list, but keep at least one trailing empty row.
         for i in (0..<list.count).reversed() where list.count > 1 && list[i].shortcut == nil {
-            list.remove(at: i)
+            let removed = list.remove(at: i)
+            KeyboardShortcuts.setShortcut(nil, for: removed.name)
         }
 
         // Ensure there's always one more empty recorder at the end up to the max.
         let maxShortcuts = APState.shared.defaults.integer(forKey: "maxShortcutsInSequence")
         if list.last?.shortcut != nil && list.count < maxShortcuts {
-            list.append(newRow(with: nil))
+            list.append(newRow(at: list.count, with: nil))
         }
 
         // Check for any conflicting entries.
@@ -163,6 +176,7 @@ class APSequenceViewController: NSViewController {
         runAnimation({ _ in
             self.view.animator().frame.origin = destination
         }, done: {
+            self.clearAllRowBindings()
             self.view.removeFromSuperview()
             self.afterRemoved?()
         })

@@ -65,14 +65,12 @@ Apptivator has some experimental overrides that can be toggled via the Terminal 
 
 #### Setting up the project
 
-Apptivator uses `carthage` to manage its dependencies (you can install it with `brew`). To build Apptivator on your machine:
+Apptivator uses Swift Package Manager for its dependencies. Xcode resolves them on first open — no external tools required.
 
 ```bash
 # Clone the repository
 git clone git@github.com:acheronfail/apptivator.git && cd apptivator
-# Install dependencies with carthage
-carthage update --platform macos
-# Open the project
+# Open the project — Xcode will fetch the SPM dependencies
 open Apptivator.xcodeproj
 ```
 

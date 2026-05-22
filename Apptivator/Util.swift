@@ -3,6 +3,7 @@
 //  Apptivator
 //
 
+import AXSwift
 import os
 
 let APP_NAME = Bundle.main.infoDictionary![kCFBundleNameKey as String] as! String

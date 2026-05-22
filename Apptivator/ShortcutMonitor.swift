@@ -9,6 +9,7 @@
 //
 
 import AppKit
+import Carbon.HIToolbox
 import KeyboardShortcuts
 
 final class ShortcutMonitor {
@@ -67,11 +68,31 @@ extension KeyboardShortcuts.Shortcut {
     // raw value of NSEvent.ModifierFlags (Cocoa flags). MASShortcut used the same encoding.
     init(cocoaKeyCode keyCode: UInt, cocoaModifierFlags modifierFlags: UInt) {
         let cocoa = NSEvent.ModifierFlags(rawValue: modifierFlags)
-        self.init(carbonKeyCode: Int(keyCode), carbonModifiers: cocoa.carbon)
+        self.init(carbonKeyCode: Int(keyCode), carbonModifiers: ShortcutMonitor.carbonModifiers(from: cocoa))
     }
 
     var cocoaKeyCode: UInt { UInt(carbonKeyCode) }
     var cocoaModifierFlags: UInt {
-        NSEvent.ModifierFlags(carbon: carbonModifiers).rawValue
+        ShortcutMonitor.cocoaModifierFlags(fromCarbon: carbonModifiers).rawValue
+    }
+}
+
+extension ShortcutMonitor {
+    static func carbonModifiers(from cocoa: NSEvent.ModifierFlags) -> Int {
+        var carbon = 0
+        if cocoa.contains(.control) { carbon |= controlKey }
+        if cocoa.contains(.option)  { carbon |= optionKey }
+        if cocoa.contains(.shift)   { carbon |= shiftKey }
+        if cocoa.contains(.command) { carbon |= cmdKey }
+        return carbon
+    }
+
+    static func cocoaModifierFlags(fromCarbon carbon: Int) -> NSEvent.ModifierFlags {
+        var cocoa: NSEvent.ModifierFlags = []
+        if carbon & controlKey == controlKey { cocoa.insert(.control) }
+        if carbon & optionKey  == optionKey  { cocoa.insert(.option) }
+        if carbon & shiftKey   == shiftKey   { cocoa.insert(.shift) }
+        if carbon & cmdKey     == cmdKey     { cocoa.insert(.command) }
+        return cocoa
     }
 }
