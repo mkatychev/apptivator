@@ -78,12 +78,14 @@ Once you've opened the Xcode project, it should be enough to make your changes a
 
 #### Creating a DMG
 
-The process to create build artefacts for this app is extremely simple:
+Run the release script:
 
-1. Archive a build in Xcode (`Products` -> `Archive`)
-2. Export the app
-3. Run [`create-dmg`](https://github.com/sindresorhus/create-dmg)
-4. 🎉
+```bash
+brew install create-dmg     # one-time
+./tools/release.sh
+```
+
+This archives the app, lifts the (ad-hoc-signed, universal) `.app` out of the archive, and packages it as `build/Apptivator-<version>.dmg`. Recipients will see a Gatekeeper warning on first launch — right-click → Open to bypass.
 
 ## License
 

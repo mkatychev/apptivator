@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,13 +11,6 @@
 		152416AC20C73D1300A5D7D2 /* APSequenceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 159ED108207E379D005489ED /* APSequenceViewController.xib */; };
 		1537F5E1204C8D860056EE50 /* APAppEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1537F5E0204C8D860056EE50 /* APAppEntry.swift */; };
 		15492103207B53AE00E45BBC /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15492102207B53AE00E45BBC /* Util.swift */; };
-		AB03000000000000000000C1 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B1 /* KeyboardShortcuts */; };
-		AB03000000000000000000C2 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B2 /* SwiftyJSON */; };
-		AB03000000000000000000C3 /* AXSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B3 /* AXSwift */; };
-		AB03000000000000000000C4 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B4 /* LaunchAtLogin */; };
-		AB03000000000000000000C5 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B5 /* KeyboardShortcuts */; };
-		AB03000000000000000000C6 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB04000000000000000000D1 /* Logger.swift */; };
-		AB03000000000000000000C7 /* ShortcutMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB04000000000000000000D2 /* ShortcutMonitor.swift */; };
 		155D2C03204F61220087478B /* Credits.rtfd in Resources */ = {isa = PBXBuildFile; fileRef = 155D2C02204F61220087478B /* Credits.rtfd */; };
 		1561AED2207615AC00C69338 /* UIOverrides.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1561AED1207615AC00C69338 /* UIOverrides.swift */; };
 		15673D7020B6140F00542276 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 15673D6F20B6140E00542276 /* README.md */; };
@@ -29,6 +22,13 @@
 		15A8D9722083624600D55A9B /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A8D9712083624600D55A9B /* Helpers.swift */; };
 		15F39F3C204CB72D00847CD5 /* APPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F39F3B204CB72D00847CD5 /* APPopoverViewController.swift */; };
 		15FC8CC8204E2E2C000B5E1E /* APState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FC8CC7204E2E2C000B5E1E /* APState.swift */; };
+		AB03000000000000000000C1 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B1 /* KeyboardShortcuts */; };
+		AB03000000000000000000C2 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B2 /* SwiftyJSON */; };
+		AB03000000000000000000C3 /* AXSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B3 /* AXSwift */; };
+		AB03000000000000000000C4 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B4 /* LaunchAtLogin */; };
+		AB03000000000000000000C5 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = AB02000000000000000000B5 /* KeyboardShortcuts */; };
+		AB03000000000000000000C6 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB04000000000000000000D1 /* Logger.swift */; };
+		AB03000000000000000000C7 /* ShortcutMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB04000000000000000000D2 /* ShortcutMonitor.swift */; };
 		B3B4C2C11E25894B009F8E4E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B4C2C01E25894B009F8E4E /* AppDelegate.swift */; };
 		B3B4C2C31E25894B009F8E4E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3B4C2C21E25894B009F8E4E /* Assets.xcassets */; };
 		BA54C46621F87F480084BB36 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA54C46521F87F480084BB36 /* Extensions.swift */; };
@@ -46,8 +46,6 @@
 
 /* Begin PBXFileReference section */
 		1537F5E0204C8D860056EE50 /* APAppEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APAppEntry.swift; sourceTree = "<group>"; };
-		AB04000000000000000000D1 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		AB04000000000000000000D2 /* ShortcutMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutMonitor.swift; sourceTree = "<group>"; };
 		15492102207B53AE00E45BBC /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		155D2C02204F61220087478B /* Credits.rtfd */ = {isa = PBXFileReference; lastKnownFileType = wrapper.rtfd; path = Credits.rtfd; sourceTree = "<group>"; };
 		1561AED1207615AC00C69338 /* UIOverrides.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIOverrides.swift; sourceTree = "<group>"; };
@@ -64,6 +62,8 @@
 		15F39F3B204CB72D00847CD5 /* APPopoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APPopoverViewController.swift; sourceTree = "<group>"; };
 		15FC8CC7204E2E2C000B5E1E /* APState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APState.swift; sourceTree = "<group>"; };
 		15FF0CCC204A231800E04103 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Bridging-Header.h"; path = "Apptivator/Bridging-Header.h"; sourceTree = "<group>"; };
+		AB04000000000000000000D1 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		AB04000000000000000000D2 /* ShortcutMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutMonitor.swift; sourceTree = "<group>"; };
 		B3B4C2BD1E25894B009F8E4E /* Apptivator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Apptivator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3B4C2C01E25894B009F8E4E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B3B4C2C21E25894B009F8E4E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -350,7 +350,10 @@
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = ApptivatorTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.acheronfail.ApptivatorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -374,7 +377,10 @@
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = ApptivatorTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.acheronfail.ApptivatorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -434,7 +440,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "Apptivator/Bridging-Header.h";
@@ -505,7 +511,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Apptivator/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.acheronfail.apptivator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -524,8 +533,12 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Apptivator/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.acheronfail.apptivator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -3,6 +3,7 @@
 //  Apptivator
 //
 
+import AXSwift
 import SwiftyJSON
 import os
 
