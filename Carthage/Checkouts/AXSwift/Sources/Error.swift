@@ -1,4 +1,5 @@
 import Foundation
+import Cocoa
 
 extension AXError: Swift.Error {}
 
@@ -38,6 +39,8 @@ extension AXError: CustomStringConvertible {
             return "ParameterizedAttributeUnsupported"
         case .notEnoughPrecision:
             return "NotEnoughPrecision"
+        @unknown default:
+            return "<Unknown>"
         }
     }
 

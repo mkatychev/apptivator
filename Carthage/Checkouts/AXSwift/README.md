@@ -1,5 +1,8 @@
 # AXSwift
 
+[![Version](https://cocoapod-badges.herokuapp.com/v/AXSwift/badge.svg)](https://cocoapods.org/pods/AXSwift)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
 AXSwift is a Swift wrapper for macOS's C-based accessibility client APIs. Working with these APIs is
 error-prone and a huge pain, so AXSwift makes everything easier:
 
@@ -13,19 +16,22 @@ That's up to you!
 
 ## Using AXSwift
 
-Swift package manager (SPM) is not supported, because it cannot build libraries
-and applications that depend on Cocoa.
+### SPM
+In your Package.swift:
+```
+.package(url: "https://github.com/tmandry/AXSwift", from: "0.3.0"),
+```
 
 ### Carthage
 In your Cartfile:
 ```
-github "tmandry/AXSwift" ~> 0.2
+github "tmandry/AXSwift" ~> 0.3
 ```
 
 ### CocoaPods
 In your Podfile:
 ```
-pod 'AXSwift', '~> 0.2'
+pod 'AXSwift', '~> 0.3'
 ```
 
 See the source of [AXSwiftExample](https://github.com/tmandry/AXSwift/blob/master/AXSwiftExample/AppDelegate.swift)
