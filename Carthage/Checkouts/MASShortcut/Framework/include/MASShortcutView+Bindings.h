@@ -1,1 +1,0 @@
-../UI/MASShortcutView+Bindings.h
